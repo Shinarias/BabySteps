@@ -36,20 +36,28 @@ def movement():
         xpos = noodleHead.xcor()
         noodleHead.setx(xpos + 20)
 
+
 def go_up():
-    noodleHead.direction = "up"
+    if noodleHead.lastdirection != "down":
+        noodleHead.direction = "up"
+        noodleHead.lastdirection = "up"
 
 
 def go_down():
-    noodleHead.direction = "down"
-
+    if noodleHead.lastdirection != "up":
+        noodleHead.direction = "down"
+        noodleHead.lastdirection = "down"
 
 def go_left():
-    noodleHead.direction = "left"
+    if noodleHead.lastdirection != "right":
+        noodleHead.direction = "left"
+        noodleHead.lastdirection = "left"
 
 
 def go_right():
-    noodleHead.direction = "right"
+    if noodleHead.lastdirection != "left":
+        noodleHead.direction = "right"
+        noodleHead.lastdirection = "right"
 
 
 # Keyboard bindings
@@ -69,6 +77,7 @@ noodleHead.color("yellow")
 noodleHead.penup()
 noodleHead.goto(0, 0)
 noodleHead.direction = "stop"
+noodleHead.lastdirection = "none"
 
 # DangerNoodle's nommies
 
@@ -102,14 +111,15 @@ while True:
 
     # Reverse movement of DangerNoodle segments
     for index in range(len(segments)-1, 0, -1):
-        segPosX = segments[index - 1].xcor()
-        segPosY = segments[index - 1].ycor()
+        segPosX = segments[index-1].xcor()
+        segPosY = segments[index-1].ycor()
         segments[index].goto(segPosX, segPosY)
 
     # Move first Segment to where DangerNoodles head is
     if len(segments) > 0:
         segPosY = noodleHead.ycor()
         segPosX = noodleHead.xcor()
+        segments[0].goto(segPosX, segPosY)
 
     movement()
 
