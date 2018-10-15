@@ -1,84 +1,119 @@
-import time
 import turtle
+import time
 import random
 
 
 # Global Variables
 
-delay = 0.1
+updateDelay = 0.1
 
-# Main Window
 
-mw = turtle.Screen()
-mw.title("DangerNoodle!")
-mw.setup(600, 600)
-mw.bgcolor("black")
-mw.tracer()
+# Set up the Screen
+
+mainWindow = turtle.Screen()
+mainWindow.title("DangerNoodle!")
+mainWindow.bgcolor("black")
+mainWindow.setup(width=600, height=600)
+mainWindow.tracer(0)
+
+# Segment list
+segments = []
 
 
 # Functions
+
+def movement():
+    if noodleHead.direction == "up":
+        ypos = noodleHead.ycor()
+        noodleHead.sety(ypos + 20)
+    if noodleHead.direction == "down":
+        ypos = noodleHead.ycor()
+        noodleHead.sety(ypos - 20)
+    if noodleHead.direction == "left":
+        xpos = noodleHead.xcor()
+        noodleHead.setx(xpos - 20)
+    if noodleHead.direction == "right":
+        xpos = noodleHead.xcor()
+        noodleHead.setx(xpos + 20)
+
 def go_up():
-    if head.lastdirection != "down":
-        head.direction = "up"
+    noodleHead.direction = "up"
 
 
 def go_down():
-    if head.lastdirection != "up":
-        head.direction = "down"
-
-
-def go_right():
-    if head.lastdirection != "left":
-        head.direction = "right"
+    noodleHead.direction = "down"
 
 
 def go_left():
-    if head.lastdirection != "right":
-        head.direction = "left"
+    noodleHead.direction = "left"
 
 
-def movement():
-    if head.direction == "up":
-        y = head.ycor()
-        head.lastdirection = "up"
-        head.sety(y + 20)
-    if head.direction == "down":
-        y = head.ycor()
-        head.lastdirection = "down"
-        head.sety(y - 20)
-    if head.direction == "right":
-        x = head.xcor()
-        head.lastdirection = "right"
-        head.setx(x + 20)
-    if head.direction == "left":
-        x = head.xcor()
-        head.lastdirection = "left"
-        head.setx(x - 20)
+def go_right():
+    noodleHead.direction = "right"
 
 
-# DangerNoodle head
-head = turtle.Turtle()
-head.shape("square")
-head.color("yellow")
-head.speed(0)
-head.penup()
-head.direction = "stop"
-head.lastdirection = "none"
-head.goto(0, 0)
+# Keyboard bindings
 
-# Keybinds
+mainWindow.listen()
+mainWindow.onkeypress(go_up, "Up")
+mainWindow.onkeypress(go_down, "Down")
+mainWindow.onkeypress(go_left, "Left")
+mainWindow.onkeypress(go_right, "Right")
 
-mw.listen()
-mw.onkeypress(go_up, "w")
-mw.onkeypress(go_down, "s")
-mw.onkeypress(go_right, "d")
-mw.onkeypress(go_left, "a")
+# DangerNoodle setup
 
-# Game Loop
+noodleHead = turtle.Turtle()
+noodleHead.speed(0)
+noodleHead.shape("square")
+noodleHead.color("yellow")
+noodleHead.penup()
+noodleHead.goto(0, 0)
+noodleHead.direction = "stop"
+
+# DangerNoodle's nommies
+
+food = turtle.Turtle()
+food.speed(0)
+food.shape("circle")
+food.color("red")
+food.penup()
+food.goto(0, 100)
+
+
+
+# Main game loop
 
 while True:
-    mw.update()
+    mainWindow.update()
+
+    # Check for collision
+    if noodleHead.distance(food) < 20:
+        # Randomizing food Coordinates
+        foodxpos = random.randint(-290, 290)
+        foodypos = random.randint(-290, 290)
+        food.goto(foodxpos, foodypos)
+        # Creating a new segment
+        new_segment = turtle.Turtle()
+        new_segment.speed(0)
+        new_segment.shape("square")
+        new_segment.color("white")
+        new_segment.penup()
+        segments.append(new_segment)
+
+    # Reverse movement of DangerNoodle segments
+    for index in range(len(segments)-1, 0, -1):
+        segPosX = segments[index - 1].xcor()
+        segPosY = segments[index - 1].ycor()
+        segments[index].goto(segPosX, segPosY)
+
+    # Move first Segment to where DangerNoodles head is
+    if len(segments) > 0:
+        segPosY = noodleHead.ycor()
+        segPosX = noodleHead.xcor()
+
     movement()
-    time.sleep(delay)
+
+    time.sleep(updateDelay)
 
 
+mainWindow.mainloop()
