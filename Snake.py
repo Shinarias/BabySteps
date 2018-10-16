@@ -5,7 +5,7 @@ import random
 
 # Global Variables
 
-updateDelay = 0.1
+updateDelay = 0.2
 
 
 # Set up the Screen
@@ -108,6 +108,22 @@ while True:
         new_segment.color("white")
         new_segment.penup()
         segments.append(new_segment)
+
+    if noodleHead.ycor() > 290 or noodleHead.ycor() < -290:
+        temp = turtle.Turtle()
+        temp.speed(0)
+        temp.color("red")
+        temp.shape("triangle")
+        temp.penup()
+        temp.goto(0, 0)
+
+    if noodleHead.xcor() > 290 or noodleHead.xcor() < -290:
+        temp = turtle.Turtle()
+        temp.speed(0)
+        temp.color("red")
+        temp.shape("triangle")
+        temp.penup()
+        temp.goto(0, 0)
 
     # Reverse movement of DangerNoodle segments
     for index in range(len(segments)-1, 0, -1):
