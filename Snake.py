@@ -5,9 +5,10 @@ import random
 
 # Global Variables
 
-updateDelay = 0.2
-
-
+gameOver = False
+updateDelay = 0.1
+highscore = 0
+score = 0
 # Set up the Screen
 
 mainWindow = turtle.Screen()
@@ -60,6 +61,16 @@ def go_right():
         noodleHead.lastdirection = "right"
 
 
+# Text on screen
+
+pen = turtle.Turtle()
+pen.speed(0)
+pen.shape("square")
+pen.color("white")
+pen.penup()
+pen.hideturtle()
+pen.goto(0, 260)
+
 # Keyboard bindings
 
 mainWindow.listen()
@@ -89,14 +100,18 @@ food.penup()
 food.goto(0, 100)
 
 
-
 # Main game loop
 
 while True:
+
     mainWindow.update()
+    pen.clear()
+    pen.write("Score: " + str(score) + " Highscore: " + str(highscore), align="center", font=("Courier", 24, "normal"))
 
     # Check for collision
     if noodleHead.distance(food) < 20:
+        # Count up score
+        score += 1
         # Randomizing food Coordinates
         foodxpos = random.randint(-290, 290)
         foodypos = random.randint(-290, 290)
@@ -109,23 +124,20 @@ while True:
         new_segment.penup()
         segments.append(new_segment)
 
-    if noodleHead.ycor() > 290 or noodleHead.ycor() < -290:
-        temp = turtle.Turtle()
-        temp.speed(0)
-        temp.color("red")
-        temp.shape("triangle")
-        temp.penup()
-        temp.goto(0, 0)
+    # Border collision detection
 
-    if noodleHead.xcor() > 290 or noodleHead.xcor() < -290:
-        temp = turtle.Turtle()
-        temp.speed(0)
-        temp.color("red")
-        temp.shape("triangle")
-        temp.penup()
-        temp.goto(0, 0)
+    if noodleHead.ycor() > 290 or noodleHead.ycor() < -290 or noodleHead.xcor() > 290 or noodleHead.xcor() < -290:
+        time.sleep(1)
+        for segment in segments:
+            segment.goto(1000, 1000)
+        segments.clear()
+        noodleHead.direction = "stop"
+        noodleHead.goto(0, 0)
+        highscore = score
+        score = 0
 
-    # Reverse movement of DangerNoodle segments
+    # Movement of DangerNoodle segments, last goes first
+
     for index in range(len(segments)-1, 0, -1):
         segPosX = segments[index-1].xcor()
         segPosY = segments[index-1].ycor()
@@ -137,8 +149,21 @@ while True:
         segPosX = noodleHead.xcor()
         segments[0].goto(segPosX, segPosY)
 
+    # Initiate
     movement()
 
+    for segment in segments:
+        if segment.distance(noodleHead) < 20:
+            time.sleep(1)
+            noodleHead.goto(0, 0)
+            noodleHead.direction = "stop"
+
+            for segment in segments:
+                segment.goto(1000, 1000)
+            segments.clear()
+            highscore = score
+            score = 0
+            food.goto(0, 100)
     time.sleep(updateDelay)
 
 
